@@ -9,7 +9,7 @@ class PostsController < ApplicationController
   end
 
   def checked
-    post = Post.find(params[:id]) # => Postモデル（postsテーブル）のidをキーに取得する
+    post = Post.find(params[:id])
     if post.checked #checkedカラムのパラメーターがtrueであるか
       post.update(checked: false)#trueだったらfalseに更新
     else

@@ -19,7 +19,6 @@
 // }
 // window.addEventListener("load", check);
 //////////////////////////////////////////////////
-
 // 3.checked.jsに、「メモクリックのイベント時」に動作する処理を記述しましょう
 //  要素1つずつに対して、「クリック」した際に動作する処理を記述します。
 //  まずは、forEachを記述して、それぞれの要素への処理を記述する場所を用意します。
@@ -31,20 +30,35 @@
 // window.addEventListener("load", check);
 //////////////////////////////////////////////////
 //  次に処理としてaddEventListenerメソッドを使用し、引数にclickの指定をします。
-function check() {
-  const posts = document.querySelectorAll(".post");
-  posts.forEach(function (post) {
-    post.addEventListener("click", () => { });
-  });
-}
-window.addEventListener("load", check);
 // これで、「要素1つずつに対して、
 // 『クリック』した際に動作するイベント駆動」を設定することができました。
 
 function check() {
   const posts = document.querySelectorAll(".post");
   posts.forEach(function (post) {
-    post.addEventListener("click", () => { });
+    if (post.getAttribute("data-load") != null) {
+      return null; //return null; によってJavaScriptの処理から抜け出せる
+    }
+    post.setAttribute("data-load", "true");
+    post.addEventListener("click", () => {
+      const postId = post.getAttribute("data-id");
+      const XHR = new XMLHttpRequest();
+      XHR.open("GET", `/posts/${postId}`, true);
+      XHR.responseType = "json";
+      XHR.send();
+      XHR.onload = () => {
+        if (XHR.status != 200) {
+          alert(`Error ${XHR.status}: ${XHR.statusText}`);
+          return null; //return null; によってJavaScriptの処理から抜け出せる
+        }
+        const item = XHR.response.post;
+        if (item.checked === true) {
+          post.setAttribute("data-check", "true");
+        } else if (item.checked === false) {
+          post.removeAttribute("data-check");
+        }
+      };
+    });
   });
 }
-window.addEventListener("load", check);
+setInterval(check, 1000); //setInterval は一定時間ごとに特定の処理を繰り返す
