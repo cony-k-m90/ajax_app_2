@@ -3,8 +3,8 @@ class PostsController < ApplicationController
     @posts = Post.all.order(id: "DESC")
   end
   def create
-    Post.create(content: params[:content])
-    redirect_to action: :index
+    post = Post.create(content: params[:content], checked: false)#メモ作成時に"未読"の情報を保存
+    render json:{ post: post }#Ajaxを実現するためレスポンスをjsonにしている
   end
   def checked
     post = Post.find(params[:id])
